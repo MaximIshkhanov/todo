@@ -173,10 +173,7 @@ async function deleteTask(id) {
         tasks.splice(index, 1);
         render(page=page-1);
       }
-      else if (index !== -1 && (tasks.length%5)!==1) {
-        tasks.splice(index, 1);
-        render(page);
-      }
+      e
     } else {
       console.error('Failed to delete task');
     }
@@ -185,6 +182,18 @@ async function deleteTask(id) {
   }
   
 }
+        function deleteTask(id, list) {
+          list.forEach((task, idx) => {
+            if (task.id === Number(id) && (){
+            list.splice(idx, 1)
+            render(page=page-1)
+            }
+            else if (task.id === Number(id) & (tasks.length%5)!==1){
+              list.splice(idx, 1)
+              render(page)
+            }
+          })
+        }
       
     //All done
     function completeAll(event) {

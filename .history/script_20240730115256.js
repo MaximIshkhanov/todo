@@ -1,0 +1,880 @@
+(() => {
+    const inputTasks = document.getElementById('input-tasks')
+    const addButton = document.getElementById('add-button')
+    const allTasksCounter = document.getElementById('all-tasks-counter')
+    const completedTasksCounter = document.getElementById('completed-tasks-counter')
+    const uncompletedTasksCounter = document.getElementById('uncompleted-tasks-counter')
+    const deleteALLButton = document.getElementById('alldell')
+    const tasksContainer = document.getElementById('tasks')
+    const allСompletedButton = document.getElementById('all-completed-button')
+    const allTasksButton = document.getElementById('all-tasks-button')
+    const completedTasksButton = document.getElementById('completed-tasks-button')
+    const uncompletedTasksButton = document.getElementById('uncompleted-tasks-button')
+    const containerPagination = document.getElementById('pagination')
+  
+    let tasks = []
+    let page = 1
+    let filterType = 'all';
+    const {_} = window
+  
+    async function addPlus() {
+      const newTaskText = inputTasks.value
+      if (newTaskText, tasks) {
+        await addTask(newTaskText, tasks)
+        inputTasks.value != '' 
+      }
+    }
+  
+    
+   async function loader(){
+      try{
+      const response = await fetch('http://localhost:5000/task', {
+        method: 'GET',
+        mode: 'cors',
+      })
+      const data = await response.json();
+      tasks.map(el => el.push(data))
+      tasksRender(data);
+    }catch(error){
+      console.log(error, 'ухты ошибка')
+    }}render();
+    //add with Enter
+     function addTaskWithEnter( event){
+      const newTaskText = inputTasks.value
+      if (event.key === 'Enter') {
+        addTask(newTaskText, tasks)
+        inputTasks.value = ''
+      }
+    }
+  
+  
+    //check new task
+    function isNotHaveTask(text, tasks) {
+      let isNotHave = true
+      tasks.forEach((task) => {
+        if (task.text === text) {
+          isNotHave = false
+        }
+      });
+      return isNotHave
+    }
+  
+  
+    // render current task 
+    async function render() {
+      const renderedTasks = filtration(tasks);
+      renderTasksCount(tasks)
+      renderButtonPag(renderedTasks)
+      const slicedTasks = sliceTasks(renderedTasks);
+      await tasksRender(slicedTasks);
+      
+      
+    }
+  
+    //add task
+    async function addTask() {
+      //makes one space of many spaces
+      let start = inputTasks.value.indexOf(" ")
+      let end = inputTasks.value.lastIndexOf(" ")
+      let firstPart = inputTasks.value.slice(0,start)
+      let secontPart = inputTasks.value.slice(end)
+      inputTasks.value = firstPart + secontPart
+      let newTaskText = inputTasks.value
+      
+      if (newTaskText && isNotHaveTask(newTaskText, tasks) && inputTasks.value!=" " && (newTaskText.length)<250 ) {
+        const task = {
+          text: _.escape(newTaskText),
+        }
+        
+      try {
+          const response = await fetch('http://localhost:5000/task', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(task),
+          });console.log(task,tasks)
+          const data = await response.json();
+          tasks.push(data);
+          inputTasks.value = ''
+          page = Math.ceil((tasks.length) / 5);
+          render(tasks)
+  
+      } catch (error) {
+          console.error('Error adding task:', error);
+      }
+      }
+    }
+  
+    //task list function
+    function sliceTasks(list) {
+      const start = 5 * (page - 1)
+      const end = start + 5
+      const pageTasks = list.slice(start, end)
+      return pageTasks
+    }
+  
+    async function tasksRender(list) {
+      if (!Array.isArray(list)) {
+        console.error('Expected an array but received:', list);
+        return;
+      }
+      
+    
+      let htmlList = '';
+      list.forEach((task) => {
+        const cls = task.isComplete ?
+          'todo__task todo__task_complete' :
+          'todo__task'
+        const checked = task.isComplete ? 'checked' : ''
+        const taskHtml = `
+            <div id="${task.id}" class="${cls}">
+                <label class="todo__checkbox">
+                    <input type="checkbox" ${checked} class="check" id ="${task.id}" >  
+                    <div></div>    
+                </label>
+                <div id="text.id" class="todo__task-text">${(task.text)}</div>
+                <input class="redact" value=${(task.text)} style="display: none" id = "redact.id" > 
+                
+                <div class="todo__task-del">-</div>
+            </div>
+            `
+        htmlList = htmlList + taskHtml
+      })
+      tasksContainer.innerHTML = htmlList
+      
+    }
+  
+    //Tracking a click on a task checkbox
+    function checkCheckBoxClick(event) {
+      const target = event.target
+      const isDeleteEl = target.classList.contains('todo__task-del')
+      if (isDeleteEl) {
+        const task = target.parentElement
+        const taskId = task.getAttribute('id')
+        deleteTask(taskId, tasks)
+      }
+    }
+  
+  
+    //task delete function on "-"
+     如发现站点功能异常,请加群反馈704081431,反馈问题请携带错误截图辅助排查
+
+站点域名可能被污染导致无法访问，请保存地址发布页面防止丢失EasyGPT地址发布页面，出现使用问题也请优先尝试发布页其他站点。
+站点gpt-3.5-turbo,gpt-4o-free无需登录可直接使用
+登录用户可免费使用目前最强语言模型gpt-4-all(输入框最后一个按钮切换模型,目前限制8/1d,如需解除使用限制,请前往爱发电捐赠,备注邮箱将自动绑定至网站账号,忘记备注请复制订单号至此网站设置页面兑换;)(请珍惜接口不要滥用,不要尝试违禁内容)
+网站已运行超过十五个月，没有进行过任何引流或广告变现。如果网站对您有帮助且您有能力，请捐赠任意金额后使用。微信捐赠 支付宝红包 支付宝捐赠
+Здравствуйте! Как я могу вам помочь сегодня?
+
+function deleteTask(id, list) {
+list.forEach((task, idx) => {
+if (task.id === Number(id) && (tasks.length%5)===1){
+list.splice(idx, 1)
+render(page=page-1)
+}
+else if (task.id === Number(id) & (tasks.length%5)!==1){
+list.splice(idx, 1)
+render(page)
+}
+})
+}
+
+помоги сделать фетч запросы на удаление для этого кода
+
+Чтобы добавить функцию для выполнения fetch-запросов на удаление задач, нам нужно модифицировать ваш код. Мы добавим асинхронные fetch-запросы, чтобы отправлять DELETE запросы на сервер. Предположим, что ваш сервер имеет API, которое поддерживает удаление задач по их идентификатору.
+
+Вот как можно модифицировать ваш код:
+
+Добавить асинхронную функцию для отправки DELETE запроса.
+Обернуть процесс удаления задачи в эту асинхронную функцию.
+Вот пример того, как это может выглядеть:
+
+async function deleteTask(id, list) {
+  // Функция для выполнения DELETE запроса на сервер
+  async function deleteTaskFromServer(id) {
+    try {
+      const response = await fetch(`/tasks/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok' + response.statusText);
+      }
+      return response.json();
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  }
+
+  for (let idx = 0; idx < list.length; idx++) {
+    const task = list[idx];
+    if (task.id === Number(id)) {
+      // Удаляем задачу из списка только после успешного удаления на сервере
+      const result = await deleteTaskFromServer(id);
+      if (result && (tasks.length % 5) === 1) {
+        list.splice(idx, 1);
+        render(page = page - 1);
+      } else if (result) {
+        list.splice(idx, 1);
+        render(page);
+      }
+      break; // Прерываем цикл после удаления задачи
+    }
+  }
+}
+Объяснение изменений:
+Асинхронная функция deleteTaskFromServer: Эта функция выполняет fetch-запрос на удаление задачи с указанным id. Мы обрабатываем возможные ошибки с помощью try-catch блока.
+Изменение основного кода deleteTask:
+Обходим список задач с помощью обычного for цикла, чтобы использовать await.
+При нахождении задачи с соответствующим id, мы сначала вызываем deleteTaskFromServer.
+Если удаление прошло успешно (результат не пустой), мы удаляем задачу из списка и вызываем render с соответствующей страницей.
+Прерываем цикл после удаления задачи, чтобы избежать лишних итераций.
+Этот код предполагает, что серверный API отвечает JSON-форматом после успешного удаления задачи. Если это не так, вам, возможно, потребуется скорректировать код обработки ответа от сервера.
+
+async function loader(){
+try{
+const response = await fetch('http://localhost:5000/task', {
+method: 'GET',
+mode: 'cors',
+})
+const data = await response.json();
+tasks.map(el => el.push(data))
+tasksRender(data);
+}catch(error){
+console.log(error, 'ухты ошибка')
+}}render();
+//add with Enter
+function addTaskWithEnter( event){
+const newTaskText = inputTasks.value
+if (event.key === 'Enter') {
+addTask(newTaskText, tasks)
+inputTasks.value = ''
+}
+}
+этот запрос работает, попробуй сделать на его примере запрос удаления рабочим
+
+Конечно! Чтобы сделать запрос на удаление рабочим, можно использовать аналогичный подход, как и в функции загрузки данных (loader). Вот пример функции, которая отправляет запрос на удаление задачи и обновляет интерфейс:
+
+async function deleteTask(id, list) {
+  // Функция для выполнения DELETE запроса на сервер
+  async function deleteTaskFromServer(id) {
+    try {
+      const response = await fetch(`http://localhost:5000/task/${id}`, {
+        method: 'DELETE',
+        mode: 'cors',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok ' + response.statusText);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  }
+
+  for (let idx = 0; idx < list.length; idx++) {
+    const task = list[idx];
+    if (task.id === Number(id)) {
+      // Удаляем задачу из списка только после успешного удаления на сервере
+      const result = await deleteTaskFromServer(id);
+      if (result) {
+        list.splice(idx, 1);
+        render(tasks.length % 5 === 1 ? page - 1 : page);
+      }
+      break; // Прерываем цикл после удаления задачи
+    }
+  }
+}
+Объяснение:
+URL для DELETE запроса: Мы предполагаем, что ваш API для удаления задач работает на http://localhost:5000/task/:id, где :id — это идентификатор задачи.
+
+Обработка ошибок: Как и в вашем примере с loader, используем try-catch, чтобы поймать и обработать любые ошибки, которые могут возникнуть во время выполнения запроса.
+
+Обновление интерфейса: После успешного удаления задачи с сервера (если result не пустой), задача удаляется из списка list, и вызывается render с соответствующей страницей.
+
+Этот пример демонстрирует, как можно интегрировать запрос на удаление с интерфейсом. Убедитесь, что ваш сервер правильно обрабатывает DELETE запросы и возвращает корректные ответы (например, JSON с подтверждением удаления).
+
+(() => {
+const inputTasks = document.getElementById('input-tasks')
+const addButton = document.getElementById('add-button')
+const allTasksCounter = document.getElementById('all-tasks-counter')
+const completedTasksCounter = document.getElementById('completed-tasks-counter')
+const uncompletedTasksCounter = document.getElementById('uncompleted-tasks-counter')
+const deleteALLButton = document.getElementById('alldell')
+const tasksContainer = document.getElementById('tasks')
+const allСompletedButton = document.getElementById('all-completed-button')
+const allTasksButton = document.getElementById('all-tasks-button')
+const completedTasksButton = document.getElementById('completed-tasks-button')
+const uncompletedTasksButton = document.getElementById('uncompleted-tasks-button')
+const containerPagination = document.getElementById('pagination')
+
+let tasks = []
+let page = 1
+let filterType = 'all';
+const {_} = window
+
+async function addPlus() {
+  const newTaskText = inputTasks.value
+  if (newTaskText, tasks) {
+    await addTask(newTaskText, tasks)
+    inputTasks.value != '' 
+  }
+}
+
+async function loader(){
+try{
+const response = await fetch('http://localhost:5000/task', {
+method: 'GET',
+mode: 'cors',
+})
+const data = await response.json();
+tasks.map(el => el.push(data))
+tasksRender(data);
+}catch(error){
+console.log(error, 'ухты ошибка')
+}}render();
+//add with Enter
+function addTaskWithEnter( event){
+const newTaskText = inputTasks.value
+if (event.key === 'Enter') {
+addTask(newTaskText, tasks)
+inputTasks.value = ''
+}
+}
+
+//check new task
+function isNotHaveTask(text, tasks) {
+  let isNotHave = true
+  tasks.forEach((task) => {
+    if (task.text === text) {
+      isNotHave = false
+    }
+  });
+  return isNotHave
+}
+
+
+// render current task 
+async function render() {
+  const renderedTasks = filtration(tasks);
+  renderTasksCount(tasks)
+  renderButtonPag(renderedTasks)
+  const slicedTasks = sliceTasks(renderedTasks);
+  await tasksRender(slicedTasks);
+  
+  
+}
+
+//add task
+async function addTask() {
+  //makes one space of many spaces
+  let start = inputTasks.value.indexOf(" ")
+  let end = inputTasks.value.lastIndexOf(" ")
+  let firstPart = inputTasks.value.slice(0,start)
+  let secontPart = inputTasks.value.slice(end)
+  inputTasks.value = firstPart + secontPart
+  let newTaskText = inputTasks.value
+  
+  if (newTaskText && isNotHaveTask(newTaskText, tasks) && inputTasks.value!=" " && (newTaskText.length)<250 ) {
+    const task = {
+      text: _.escape(newTaskText),
+    }
+    
+  try {
+      const response = await fetch('http://localhost:5000/task', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(task),
+      });console.log(task,tasks)
+      const data = await response.json();
+      tasks.push(data);
+      inputTasks.value = ''
+      page = Math.ceil((tasks.length) / 5);
+      render(tasks)
+
+  } catch (error) {
+      console.error('Error adding task:', error);
+  }
+  }
+}
+
+//task list function
+function sliceTasks(list) {
+  const start = 5 * (page - 1)
+  const end = start + 5
+  const pageTasks = list.slice(start, end)
+  return pageTasks
+}
+
+async function tasksRender(list) {
+  if (!Array.isArray(list)) {
+    console.error('Expected an array but received:', list);
+    return;
+  }
+  
+
+  let htmlList = '';
+  list.forEach((task) => {
+    const cls = task.isComplete ?
+      'todo__task todo__task_complete' :
+      'todo__task'
+    const checked = task.isComplete ? 'checked' : ''
+    const taskHtml = `
+        <div id="${task.id}" class="${cls}">
+            <label class="todo__checkbox">
+                <input type="checkbox" ${checked} class="check" id ="${task.id}" >  
+                <div></div>    
+            </label>
+            <div id="text.id" class="todo__task-text">${(task.text)}</div>
+            <input class="redact" value=${(task.text)} style="display: none" id = "redact.id" > 
+            
+            <div class="todo__task-del">-</div>
+        </div>
+        `
+    htmlList = htmlList + taskHtml
+  })
+  tasksContainer.innerHTML = htmlList
+  
+}
+
+//Tracking a click on a task checkbox
+function checkCheckBoxClick(event) {
+  const target = event.target
+  const isDeleteEl = target.classList.contains('todo__task-del')
+  if (isDeleteEl) {
+    const task = target.parentElement
+    const taskId = task.getAttribute('id')
+    deleteTask(taskId, tasks)
+  }
+}
+
+
+//task delete function on "-"
+  async function deleteTask(id) {
+    try {
+        const response = await fetch(`http://localhost:5000/task/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        if (response.ok) {
+            const index = tasks.findIndex(task => task.id === Number(id));
+            if (index !== -1) {
+                tasks.splice(index, 1);
+                const totalPages = Math.ceil(tasks.length / tasksPerPage);
+                if (currentPage > totalPages) {
+                    currentPage = totalPages;
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Ошибка удаления', error);
+    }
+}
+function deleteTask(id, list) {
+  list.forEach((task, idx) => {
+    if (task.id === Number(id) && (tasks.length%5)===1){
+    list.splice(idx, 1)
+    render(page=page-1)
+    }
+    else if (task.id === Number(id) & (tasks.length%5)!==1){
+      list.splice(idx, 1)
+      render(page)
+    }
+  })
+}
+
+//All done
+function completeAll(event) {
+  if (event) {
+    tasks.forEach((task) => {
+      if (task.isComplete === false) {
+        task.isComplete = true
+      }
+      event.checked=false
+    })
+    render()
+  }
+}
+
+//Function for changing the status of a task when you click on completed
+function changeTaskStatus(event) {
+  if (event.target.classList.contains('check')) {
+    const taid = Number(event.target.id)
+    tasks.forEach((task) => {
+      if (task.id === taid) {
+        task.isComplete = !task.isComplete;
+      }
+    });
+    render()
+  }
+}
+
+//Delete everything completed
+function deleteAllCompletedTasks() {
+  tasks = tasks.filter((task) => task.isComplete !== true);
+  render()
+  allСompletedButton.checked = false 
+}
+
+//Displaying the number of tasks
+function renderTasksCount(tasks) {
+  allTasksCounter.innerHTML = tasks.length
+  const filteredCompletedTasks = tasks.filter((task) => task.isComplete === true)
+  completedTasksCounter.innerHTML = filteredCompletedTasks.length
+  uncompletedTasksCounter.innerHTML = allTasksCounter.innerHTML - completedTasksCounter.innerHTML
+}
+
+//Editing a task
+function editTask(event) {
+  event.target.style.display = "none";
+  const input = event.target.nextElementSibling
+  input.style.display = "block";
+  input.focus()
+}
+
+//Blur
+function onBlurInput(event) {
+  const target = event.target
+  const currentTaskId = target.parentElement.id
+  tasks.forEach((task) => {
+    if (task.id ===  Number(currentTaskId)) {
+      task.text = _.escape(target.value)
+      render()
+    }
+  })
+  event.target.style.display = "block";
+  event.target.nextElementSibling.style.display = "none";
+}
+
+function checkKey(event) {
+  switch (event.key) {
+    case 'Enter':
+      document.activeElement.blur()
+      break;
+    default:
+      break;
+  }
+}
+
+//escape
+function saveByEnter(event) {
+  if (event.keyCode === 27) {
+    const target = event.target
+    const currentTaskId = target.parentElement.id
+    tasks.forEach((task) => {
+      if (task.id === Number(currentTaskId)) {
+        target.value = task.text
+        event.target.style.display = "none";
+        event.target.nextElementSibling.style.display = "block";
+      }
+    })
+  }
+}
+
+//Tabulation
+function allTasks() {
+  filterType = 'all';
+  page = 1
+  render()
+}
+
+function completedTasks() {
+  filterType = 'completed';
+  page = 1
+  render()
+
+}
+
+function uncompletedTasks() {
+  filterType = 'active';
+  page = 1
+  render()
+}
+
+function renderButtonPag(list) {
+  const chBotton = Math.ceil((list.length) / 5)
+  containerPagination.innerHTML = ''
+  for (i = 1; i < (chBotton + 1); i++) {
+    displayButton(i)
+  }
+}
+
+function displayButton(page) {
+  const pageButton = document.createElement('button');
+  pageButton.textContent = page;
+  pageButton.setAttribute('id', page);
+  pageButton.setAttribute('class', "btn btn-primary");
+  containerPagination.append(pageButton);
+}
+
+//when the button is clicked, updates the value of the current page
+function currentPaginationChangeOutput(event) {
+  page = event.target.id
+  render(page)
+}
+
+
+function filtration() {
+  let filterTasks = [];
+  switch (filterType) {
+    case 'active':
+      filterTasks = tasks.filter((item) => !item.isComplete);
+      if ((filterTasks.length)%5===0){
+        page =page -1
+      }
+      return filterTasks;
+    case 'completed':
+      filterTasks = tasks.filter((item) => item.isComplete);
+      if ((filterTasks.length)%5===0){
+        page =page -1
+      }
+      return filterTasks;
+    default:
+      return tasks;
+  }
+}
+
+
+document.addEventListener('keyup',addTaskWithEnter)
+tasksContainer.addEventListener('click',checkCheckBoxClick)
+addButton.addEventListener('click', addPlus)
+allСompletedButton.addEventListener("click", completeAll)
+tasksContainer.addEventListener("click", changeTaskStatus)
+allTasksButton.addEventListener("click", allTasks)
+completedTasksButton.addEventListener("click", completedTasks)
+uncompletedTasksButton.addEventListener("click", uncompletedTasks)
+tasksContainer.addEventListener("keydown", saveByEnter)
+tasksContainer.addEventListener("keyup", checkKey)
+tasksContainer.addEventListener("blur", onBlurInput, true)
+tasksContainer.addEventListener("dblclick", editTask)
+containerPagination.addEventListener('click', currentPaginationChangeOutput)
+deleteALLButton.addEventListener('click', deleteAllCompletedTasks)
+loader()
+})()
+что не так в фетч запросе на удаление?
+
+Проблема в вашем коде с фетч запросом на удаление заключается в том, что вы объявили функцию deleteTask дважды, и вторая версия переопределяет первую. Это приводит к тому, что функция, которая выполняет запрос на удаление, не вызывается правильно из обработчика клика на кнопке удаления задачи.
+
+Вот как можно исправить ваш код:
+
+Удалите второе объявление функции deleteTask, которое начинается после функции deleteAllCompletedTasks.
+
+Обновите вашу функцию checkCheckBoxClick для вызова правильной версии deleteTask, которая выполняет асинхронный DELETE запрос на сервер:
+
+//Tracking a click on a task checkbox
+function checkCheckBoxClick(event) {
+  const target = event.target;
+  const isDeleteEl = target.classList.contains('todo__task-del');
+  if (isDeleteEl) {
+    const task = target.parentElement;
+    const taskId = task.getAttribute('id');
+    deleteTask(taskId);
+  }
+}
+Исправьте ошибки в функции deleteTask, чтобы она корректно находила индекс задачи в массиве tasks и удаляла задачу после успешного удаления на сервере:
+// Task delete function on "-"
+async function deleteTask(id) {
+  try {
+    const response = await fetch(`http://localhost:5000/task/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
+    if (response.ok) {
+      const index = tasks.findIndex(task => task.id === Number(id));
+      if (index !== -1) {
+        tasks.splice(index, 1);
+        render(); // Перерисовываем после удаления задачи
+      }
+    } else {
+      console.error('Failed to delete task');
+    }
+  } catch (error) {
+    console.error('Error deleting task:', error);
+  }
+}
+    function deleteTask(id, list) {
+      list.forEach((task, idx) => {
+        if (task.id === Number(id) && (tasks.length%5)===1){
+        list.splice(idx, 1)
+        render(page=page-1)
+        }
+        else if (task.id === Number(id) & (tasks.length%5)!==1){
+          list.splice(idx, 1)
+          render(page)
+        }
+      })
+    }
+  
+    //All done
+    function completeAll(event) {
+      if (event) {
+        tasks.forEach((task) => {
+          if (task.isComplete === false) {
+            task.isComplete = true
+          }
+          event.checked=false
+        })
+        render()
+      }
+    }
+  
+    //Function for changing the status of a task when you click on completed
+    function changeTaskStatus(event) {
+      if (event.target.classList.contains('check')) {
+        const taid = Number(event.target.id)
+        tasks.forEach((task) => {
+          if (task.id === taid) {
+            task.isComplete = !task.isComplete;
+          }
+        });
+        render()
+      }
+    }
+  
+    //Delete everything completed
+    function deleteAllCompletedTasks() {
+      tasks = tasks.filter((task) => task.isComplete !== true);
+      render()
+      allСompletedButton.checked = false 
+    }
+  
+    //Displaying the number of tasks
+    function renderTasksCount(tasks) {
+      allTasksCounter.innerHTML = tasks.length
+      const filteredCompletedTasks = tasks.filter((task) => task.isComplete === true)
+      completedTasksCounter.innerHTML = filteredCompletedTasks.length
+      uncompletedTasksCounter.innerHTML = allTasksCounter.innerHTML - completedTasksCounter.innerHTML
+    }
+  
+    //Editing a task
+    function editTask(event) {
+      event.target.style.display = "none";
+      const input = event.target.nextElementSibling
+      input.style.display = "block";
+      input.focus()
+    }
+  
+    //Blur
+    function onBlurInput(event) {
+      const target = event.target
+      const currentTaskId = target.parentElement.id
+      tasks.forEach((task) => {
+        if (task.id ===  Number(currentTaskId)) {
+          task.text = _.escape(target.value)
+          render()
+        }
+      })
+      event.target.style.display = "block";
+      event.target.nextElementSibling.style.display = "none";
+    }
+  
+    function checkKey(event) {
+      switch (event.key) {
+        case 'Enter':
+          document.activeElement.blur()
+          break;
+        default:
+          break;
+      }
+    }
+  
+    //escape
+    function saveByEnter(event) {
+      if (event.keyCode === 27) {
+        const target = event.target
+        const currentTaskId = target.parentElement.id
+        tasks.forEach((task) => {
+          if (task.id === Number(currentTaskId)) {
+            target.value = task.text
+            event.target.style.display = "none";
+            event.target.nextElementSibling.style.display = "block";
+          }
+        })
+      }
+    }
+  
+    //Tabulation
+    function allTasks() {
+      filterType = 'all';
+      page = 1
+      render()
+    }
+  
+    function completedTasks() {
+      filterType = 'completed';
+      page = 1
+      render()
+    
+    }
+  
+    function uncompletedTasks() {
+      filterType = 'active';
+      page = 1
+      render()
+    }
+  
+    function renderButtonPag(list) {
+      const chBotton = Math.ceil((list.length) / 5)
+      containerPagination.innerHTML = ''
+      for (i = 1; i < (chBotton + 1); i++) {
+        displayButton(i)
+      }
+    }
+  
+    function displayButton(page) {
+      const pageButton = document.createElement('button');
+      pageButton.textContent = page;
+      pageButton.setAttribute('id', page);
+      pageButton.setAttribute('class', "btn btn-primary");
+      containerPagination.append(pageButton);
+    }
+  
+    //when the button is clicked, updates the value of the current page
+    function currentPaginationChangeOutput(event) {
+      page = event.target.id
+      render(page)
+    }
+  
+  
+    function filtration() {
+      let filterTasks = [];
+      switch (filterType) {
+        case 'active':
+          filterTasks = tasks.filter((item) => !item.isComplete);
+          if ((filterTasks.length)%5===0){
+            page =page -1
+          }
+          return filterTasks;
+        case 'completed':
+          filterTasks = tasks.filter((item) => item.isComplete);
+          if ((filterTasks.length)%5===0){
+            page =page -1
+          }
+          return filterTasks;
+        default:
+          return tasks;
+      }
+    }
+  
+    
+    document.addEventListener('keyup',addTaskWithEnter)
+    tasksContainer.addEventListener('click',checkCheckBoxClick)
+    addButton.addEventListener('click', addPlus)
+    allСompletedButton.addEventListener("click", completeAll)
+    tasksContainer.addEventListener("click", changeTaskStatus)
+    allTasksButton.addEventListener("click", allTasks)
+    completedTasksButton.addEventListener("click", completedTasks)
+    uncompletedTasksButton.addEventListener("click", uncompletedTasks)
+    tasksContainer.addEventListener("keydown", saveByEnter)
+    tasksContainer.addEventListener("keyup", checkKey)
+    tasksContainer.addEventListener("blur", onBlurInput, true)
+    tasksContainer.addEventListener("dblclick", editTask)
+    containerPagination.addEventListener('click', currentPaginationChangeOutput)
+    deleteALLButton.addEventListener('click', deleteAllCompletedTasks)
+    loader()
+  })()

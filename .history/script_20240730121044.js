@@ -169,13 +169,9 @@ async function deleteTask(id) {
     });
     if (response.ok) {
       const index = tasks.findIndex(task => task.id === Number(id));
-      if (index !== -1 && (tasks.length%5)===1) {
+      if (index !== -1&& tasks.length%5)===1) {
         tasks.splice(index, 1);
-        render(page=page-1);
-      }
-      else if (index !== -1 && (tasks.length%5)!==1) {
-        tasks.splice(index, 1);
-        render(page);
+        render();
       }
     } else {
       console.error('Failed to delete task');
@@ -185,6 +181,18 @@ async function deleteTask(id) {
   }
   
 }
+        // function deleteTask(id, list) {
+        //   list.forEach((task, idx) => {
+        //     if (task.id === Number(id) && (){
+        //     list.splice(idx, 1)
+        //     render(page=page-1)
+        //     }
+        //     else if (task.id === Number(id) & (tasks.length%5)!==1){
+        //       list.splice(idx, 1)
+        //       render(page)
+        //     }
+        //   })
+        // }
       
     //All done
     function completeAll(event) {

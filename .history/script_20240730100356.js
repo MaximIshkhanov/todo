@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script defer src = "https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script defer src="script.js"></script></head>
+<body>
+    <div class="todo">
+        <div class="todo__content">
+            <h1 class="todo__title">Zadachi</h1>
+            <div class="todo__new">
+                <input id="input-tasks" type="text" class="Pole__task" placeholder="New zadacha">
+                <div id="add-button" class="todo__add">+</div>
+            </div>
+            <div class="todo__tasks-count">
+                 <button id="all-tasks-button" class="btn btn-primary">Все задачи</button>
+                <strong id="all-tasks-counter">0</strong>
+            <div>
+                <button id="completed-tasks-button" class="btn btn-primary">Выполненные задачи</button>
+                <strong id="completed-tasks-counter" >0</strong>
+            </div>
+            <div>
+                <button id="uncompleted-tasks-button" class="btn btn-primary">Невыполненные задачи</button>
+                <strong id="uncompleted-tasks-counter">0</strong>
+            </div>
+            <div>
+               
+            </div>
+            </div>
+            <button id="alldell" class="dell__zd btn btn-danger" >Delete All Completed</button>
+            <input type="checkbox" id="all-completed-button">All Completed</input>
+                
+            </div>
+            </div>
+            <div id="tasks" class="todo__list"></div>
+            <div>
+                <h1 id="Pagination.id">Pagination</h1>
+            </div>
+           
+        </div>
+        
+    </div>
+    <div id="pagination"></div>
+</body>

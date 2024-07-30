@@ -157,35 +157,38 @@
     }
   
   
+    //task delete function on "-"
+    async function deleteTask(id, list) {
+      // Функция для выполнения DELETE запроса на сервер
+      async function deleteTaskFromServer(id) {
+        try {
+          const response = await fetch(`http://localhost:5000/task/${id}`, {
+            method: 'DELETE',
+            mode: 'cors',
+          });
+          if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+          }
+          return await response.json();
+        } catch (error) {
+          console.error('There was a problem with the fetch operation:', error);
+        }
+      }
     
-     // Task delete function on "-"
-async function deleteTask(id) {
-  try {
-    const response = await fetch(`http://localhost:5000/task/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    });
-    if (response.ok) {
-      const index = tasks.findIndex(task => task.id === Number(id));
-      if (index !== -1 && (tasks.length%5)===1) {
-        tasks.splice(index, 1);
-        render(page=page-1);
+      for (let idx = 0; idx < list.length; idx++) {
+        const task = list[idx];
+        if (task.id === Number(id)) {
+          // Удаляем задачу из списка только после успешного удаления на сервере
+          const result = await deleteTaskFromServer(id);
+          if (result) {
+            list.splice(idx, 1);
+            render(tasks.length % 5 === 1 ? page - 1 : page);
+          }
+          break; // Прерываем цикл после удаления задачи
+        }
       }
-      else if (index !== -1 && (tasks.length%5)!==1) {
-        tasks.splice(index, 1);
-        render(page);
-      }
-    } else {
-      console.error('Failed to delete task');
     }
-  } catch (error) {
-    console.error('Error deleting task:', error);
-  }
   
-}
-      
     //All done
     function completeAll(event) {
       if (event) {
