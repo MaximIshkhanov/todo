@@ -34,7 +34,7 @@
       })
       const data = await response.json();
       tasks.map(el => el.push(data))
-      // tasksRender(data);
+      tasksRender(data);
     }catch(error){
       console.log(error, 'ухты ошибка')
     }}render();

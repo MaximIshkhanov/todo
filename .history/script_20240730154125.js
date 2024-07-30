@@ -34,7 +34,7 @@
       })
       const data = await response.json();
       tasks.map(el => el.push(data))
-      // tasksRender(data);
+      tasksRender(data);
     }catch(error){
       console.log(error, 'ухты ошибка')
     }}render();
@@ -93,7 +93,7 @@
                   'Content-Type': 'application/json'
               },
               body: JSON.stringify(task),
-          });
+          });console.log(task,tasks)
           const data = await response.json();
           tasks.push(data);
           inputTasks.value = ''
@@ -158,33 +158,8 @@
   
   
     
-// Task delete function on "-"
-async function deleteTask(id) {
-  try {
-    const response = await fetch(`http://localhost:5000/task/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    });
-    if (response.ok) {
-      const index = tasks.findIndex(task => task.id === Number(id));
-      if (index !== -1 && (tasks.length%5)===1) {
-        tasks.splice(index, 1);
-        render(page=page-1);
-      }
-      else if (index !== -1 && (tasks.length%5)!==1) {
-        tasks.splice(index, 1);
-        render(page);
-      }
-    } else {
-      console.error('Failed to delete task');
-    }
-  } catch (error) {
-    console.error('Error deleting task:', error);
-  }
-  
-}
+     // Task delete function on "-"
+ 
       
     //All done
     function completeAll(event) {
@@ -192,57 +167,21 @@ async function deleteTask(id) {
         tasks.forEach((task) => {
           if (task.isComplete === false) {
             task.isComplete = true
-            console.log(task.id)
-            try {
-              fetch(`http://localhost:5000/task/${task.id}`, {
-             method: 'PUT',
-             headers: {
-               'Content-Type': 'application/json'
-             },
-             body: JSON.stringify({ isComplete: task.isComplete })
-           });
-         } catch (error) {
-           console.error('Ошибка обновления статуса', error);
-         }
           }
-          
           event.checked=false
         })
         render()
       }
     }
   
-
-
-
-    
-
-
-
-
-
-
-
     //Function for changing the status of a task when you click on completed
-     function changeTaskStatus(event) {
+    function changeTaskStatus(event) {
       if (event.target.classList.contains('check')) {
         const currentTaskId = Number(event.target.id)
         tasks.forEach((task) => {
           if (task.id === currentTaskId) {
             task.isComplete = !task.isComplete;
-          try {
-             fetch(`http://localhost:5000/task/${task.id}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ isComplete: task.isComplete })
-          });
-        } catch (error) {
-          console.error('Ошибка обновления статуса', error);
-        }
           }
-          
         });
         render()
       }

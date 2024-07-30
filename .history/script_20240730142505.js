@@ -34,7 +34,7 @@
       })
       const data = await response.json();
       tasks.map(el => el.push(data))
-      // tasksRender(data);
+      tasksRender(data);
     }catch(error){
       console.log(error, 'ухты ошибка')
     }}render();
@@ -93,7 +93,7 @@
                   'Content-Type': 'application/json'
               },
               body: JSON.stringify(task),
-          });
+          });console.log(task,tasks)
           const data = await response.json();
           tasks.push(data);
           inputTasks.value = ''
@@ -158,7 +158,7 @@
   
   
     
-// Task delete function on "-"
+     // Task delete function on "-"
 async function deleteTask(id) {
   try {
     const response = await fetch(`http://localhost:5000/task/${id}`, {
@@ -192,57 +192,21 @@ async function deleteTask(id) {
         tasks.forEach((task) => {
           if (task.isComplete === false) {
             task.isComplete = true
-            console.log(task.id)
-            try {
-              fetch(`http://localhost:5000/task/${task.id}`, {
-             method: 'PUT',
-             headers: {
-               'Content-Type': 'application/json'
-             },
-             body: JSON.stringify({ isComplete: task.isComplete })
-           });
-         } catch (error) {
-           console.error('Ошибка обновления статуса', error);
-         }
           }
-          
           event.checked=false
         })
         render()
       }
     }
   
-
-
-
-    
-
-
-
-
-
-
-
     //Function for changing the status of a task when you click on completed
-     function changeTaskStatus(event) {
+    function changeTaskStatus(event) {
       if (event.target.classList.contains('check')) {
-        const currentTaskId = Number(event.target.id)
+        const taid = Number(event.target.id)
         tasks.forEach((task) => {
-          if (task.id === currentTaskId) {
+          if (task.id === taid) {
             task.isComplete = !task.isComplete;
-          try {
-             fetch(`http://localhost:5000/task/${task.id}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ isComplete: task.isComplete })
-          });
-        } catch (error) {
-          console.error('Ошибка обновления статуса', error);
-        }
           }
-          
         });
         render()
       }
@@ -267,70 +231,79 @@ async function deleteTask(id) {
 
 
 
+    //Editing a task
     function editTask(event) {
       event.target.style.display = "none";
-      const input = event.target.nextElementSibling;
+      const input = event.target.nextElementSibling
       input.style.display = "block";
-      input.focus();
-  }
-
-  function onBlurInput(event) {
-      const target = event.target;
-      const currentTaskId = target.parentElement.id;
-      saveTaskText(target, currentTaskId).then(() => {
-          render();
-      });
-      target.style.display = "none";
-      target.previousElementSibling.style.display = "block";
-  }
-
-  function checkKey(event) {
-      if (event.key === 'Enter') {
-          document.activeElement.blur();
+      input.focus()
+    }
+    //Blur
+    function onBlurInput(event) {
+      const target = event.target
+      const currentTaskId = target.parentElement.id
+      tasks.forEach((task) => {
+        if (task.id ===  Number(currentTaskId)) {
+          task.text = _.escape(target.value)
+          
+          saveTaskText(task.id,target.value)
+          
+          render()
+        }
+      })
+      event.target.style.display = "block";
+      event.target.nextElementSibling.style.display = "none";
+    }
+    function checkKey(event) {
+      switch (event.key) {
+        case 'Enter':
+          document.activeElement.blur()
+          
+          break;
+        default:
+          break;
       }
-  }
-
-  function saveByEnter(event) {
+    }
+    //escape
+    function saveByEnter(event) {
       if (event.keyCode === 27) {
-          const target = event.target;
-          const currentTaskId = target.parentElement.id;
-          const task = tasks.find(task => task.id === Number(currentTaskId));
-          if (task) {
-              target.value = task.text;
+        const target = event.target
+        const currentTaskId = target.parentElement.id
+        tasks.forEach((task) => {
+          if (task.id === Number(currentTaskId)) {
+            target.value = task.text
+            event.target.style.display = "none";
+            event.target.nextElementSibling.style.display = "block";
+            
           }
-          target.style.display = "none";
-          target.previousElementSibling.style.display = "block";
+        })
+      }
+    }
+
+async function saveTaskText(input, taskId) {
+  const newText = target.value.value;
+  const task = tasks.find(task => task.id === taskId);
+
+  if (task && task.text !== newText) {
+      task.text = newText;
+
+      try {
+          const response = await fetch(`http://localhost:5000/task/${taskId}`, {
+              method: 'PUT',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ text: newText })
+          });
+          if (!response.ok) {
+              console.error('Error updating task:', response.statusText);
+          }
+      } catch (error) {
+          console.error('Error updating task:', error);
       }
   }
+}
 
-  async function saveTaskText(target, currentTaskId) {
-      console.log('Target value:', target.value, 'Current Task ID:', currentTaskId);
-      const newText = target.value;
-      const task = tasks.find(task => task.id === Number(currentTaskId));
-
-      if (task && task.text !== newText) {
-          console.log('Task found and text is different. Updating text.');
-          task.text = newText;
-          try {
-              const response = await fetch(`http://localhost:5000/task/${currentTaskId}`, {
-                  method: 'PUT',
-                  headers: {
-                      'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({ text: newText })
-              });
-              if (!response.ok) {
-                  console.error('Error updating task:', response.statusText);
-              } else {
-                  console.log('Task updated successfully.');
-              }
-          } catch (error) {
-              console.error('Error updating task:', error);
-          }
-      } else {
-          console.log('No changes needed or task not found.');
-      }
-  }
 
 
   

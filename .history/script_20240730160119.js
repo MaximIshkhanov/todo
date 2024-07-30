@@ -34,7 +34,7 @@
       })
       const data = await response.json();
       tasks.map(el => el.push(data))
-      // tasksRender(data);
+      tasksRender(data);
     }catch(error){
       console.log(error, 'ухты ошибка')
     }}render();
@@ -192,18 +192,6 @@ async function deleteTask(id) {
         tasks.forEach((task) => {
           if (task.isComplete === false) {
             task.isComplete = true
-            console.log(task.id)
-            try {
-              fetch(`http://localhost:5000/task/${task.id}`, {
-             method: 'PUT',
-             headers: {
-               'Content-Type': 'application/json'
-             },
-             body: JSON.stringify({ isComplete: task.isComplete })
-           });
-         } catch (error) {
-           console.error('Ошибка обновления статуса', error);
-         }
           }
           
           event.checked=false
@@ -230,8 +218,10 @@ async function deleteTask(id) {
         tasks.forEach((task) => {
           if (task.id === currentTaskId) {
             task.isComplete = !task.isComplete;
+            console.log(task.isComplete)
+}
           try {
-             fetch(`http://localhost:5000/task/${task.id}`, {
+             fetch(`http://localhost:5000/task/${id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json'
@@ -241,7 +231,7 @@ async function deleteTask(id) {
         } catch (error) {
           console.error('Ошибка обновления статуса', error);
         }
-          }
+          
           
         });
         render()
