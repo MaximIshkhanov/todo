@@ -11,7 +11,7 @@
     const completedTasksButton = document.getElementById('completed-tasks-button')
     const uncompletedTasksButton = document.getElementById('uncompleted-tasks-button')
     const containerPagination = document.getElementById('pagination')
-    let namEvent =1
+  
     let tasks = []
     let page = 1
     let filterType = 'all';
@@ -185,7 +185,7 @@ async function deleteTask(id) {
   }
   
 }
-     
+var namEvent =1     
     //All done
     function completeAll(event) {
       if (event) {

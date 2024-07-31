@@ -11,7 +11,7 @@
     const completedTasksButton = document.getElementById('completed-tasks-button')
     const uncompletedTasksButton = document.getElementById('uncompleted-tasks-button')
     const containerPagination = document.getElementById('pagination')
-    let namEvent =1
+  
     let tasks = []
     let page = 1
     let filterType = 'all';
@@ -185,18 +185,21 @@ async function deleteTask(id) {
   }
   
 }
-     
+      
     //All done
     function completeAll(event) {
       if (event) {
-        
+        const namEvent = 1
          tasks.forEach((task) => {
-          if (namEvent%2===0) {
+          if (namEvent%2) {
             task.isComplete = false
           }
-          else if (namEvent%2!==0){
+          else{
             task.isComplete = true
           }
+          
+            task.isComplete = !task.isComplete
+            console.log(1488)
             try {
               fetch(`http://localhost:5000/task/${task.id}`, {
              method: 'PUT',
@@ -212,7 +215,6 @@ async function deleteTask(id) {
           
           // event.checked=false
         })
-        namEvent=namEvent+1
         render()
       }
     }
