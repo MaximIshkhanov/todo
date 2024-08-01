@@ -365,11 +365,13 @@ async function deleteTask(id) {
         case 'active':
           filterTasks = tasks.filter((item) => !item.isComplete);
           if ((filterTasks.length)%5===0){
+            //page =page -1
           }
           return filterTasks;
         case 'completed':
           filterTasks = tasks.filter((item) => item.isComplete);
           if ((filterTasks.length)%5===0){
+            //page =page -1
           }
           return filterTasks;
         default:

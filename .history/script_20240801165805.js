@@ -4,7 +4,7 @@
     const allTasksCounter = document.getElementById('all-tasks-counter')
     const completedTasksCounter = document.getElementById('completed-tasks-counter')
     const uncompletedTasksCounter = document.getElementById('uncompleted-tasks-counter')
-    const deleteALLButton = document.getElementById('allDell')
+    const deleteALLButton = document.getElementById('alldell')
     const tasksContainer = document.getElementById('tasks')
     const allСompletedButton = document.getElementById('all-completed-button')
     const allTasksButton = document.getElementById('all-tasks-button')
@@ -365,11 +365,13 @@ async function deleteTask(id) {
         case 'active':
           filterTasks = tasks.filter((item) => !item.isComplete);
           if ((filterTasks.length)%5===0){
+            page =page -1
           }
           return filterTasks;
         case 'completed':
           filterTasks = tasks.filter((item) => item.isComplete);
           if ((filterTasks.length)%5===0){
+            page =page -1
           }
           return filterTasks;
         default:

@@ -4,7 +4,7 @@
     const allTasksCounter = document.getElementById('all-tasks-counter')
     const completedTasksCounter = document.getElementById('completed-tasks-counter')
     const uncompletedTasksCounter = document.getElementById('uncompleted-tasks-counter')
-    const deleteALLButton = document.getElementById('allDell')
+    const deleteALLButton = document.getElementById('alldell')
     const tasksContainer = document.getElementById('tasks')
     const allСompletedButton = document.getElementById('all-completed-button')
     const allTasksButton = document.getElementById('all-tasks-button')
@@ -35,7 +35,7 @@
       tasks.map(el => el.push(data))
       // tasksRender(data);
     }catch(error){
-      console.log('Error get task:', error)
+      console.log(error, '')
     }}render();
     //add with Enter
      function addTaskWithEnter( event){
@@ -74,8 +74,8 @@
       let start = inputTasks.value.indexOf(" ")
       let end = inputTasks.value.lastIndexOf(" ")
       let firstPart = inputTasks.value.slice(0,start)
-      let secondPart = inputTasks.value.slice(end)
-      inputTasks.value = firstPart + secondPart
+      let secontPart = inputTasks.value.slice(end)
+      inputTasks.value = firstPart + secontPart
       let newTaskText = inputTasks.value
       
       if (newTaskText && isNotHaveTask(newTaskText, tasks) && inputTasks.value!=" " && (newTaskText.length)<250 ) {
@@ -203,7 +203,7 @@ async function deleteTask(id) {
              body: JSON.stringify({ isComplete: task.isComplete })
            });
          } catch (error) {
-           console.error('Error update status', error);
+           console.error('Ошибка обновления статуса', error);
          }
         })
         namEvent=namEvent+1
@@ -338,9 +338,9 @@ async function deleteTask(id) {
     }
   
     function renderButtonPag(list) {
-      const chButton = Math.ceil((list.length) / 5)
+      const chBotton = Math.ceil((list.length) / 5)
       containerPagination.innerHTML = ''
-      for (i = 1; i < (chButton + 1); i++) {
+      for (i = 1; i < (chBotton + 1); i++) {
         displayButton(i)
       }
     }
@@ -365,11 +365,13 @@ async function deleteTask(id) {
         case 'active':
           filterTasks = tasks.filter((item) => !item.isComplete);
           if ((filterTasks.length)%5===0){
+            page =page -1
           }
           return filterTasks;
         case 'completed':
           filterTasks = tasks.filter((item) => item.isComplete);
           if ((filterTasks.length)%5===0){
+            page =page -1
           }
           return filterTasks;
         default:

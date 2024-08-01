@@ -4,18 +4,18 @@
     const allTasksCounter = document.getElementById('all-tasks-counter')
     const completedTasksCounter = document.getElementById('completed-tasks-counter')
     const uncompletedTasksCounter = document.getElementById('uncompleted-tasks-counter')
-    const deleteALLButton = document.getElementById('allDell')
+    const deleteALLButton = document.getElementById('alldell')
     const tasksContainer = document.getElementById('tasks')
     const allСompletedButton = document.getElementById('all-completed-button')
     const allTasksButton = document.getElementById('all-tasks-button')
     const completedTasksButton = document.getElementById('completed-tasks-button')
     const uncompletedTasksButton = document.getElementById('uncompleted-tasks-button')
     const containerPagination = document.getElementById('pagination')
-    let namEvent = 1;
-    let tasks = [];
-    let page = 1;
+    let namEvent =1
+    let tasks = []
+    let page = 1
     let filterType = 'all';
-    const {_} = window;
+    const {_} = window
   
     async function addPlus() {
       const newTaskText = inputTasks.value
@@ -25,6 +25,7 @@
       }
     }
   
+    
    async function loader(){
       try{
       const response = await fetch('http://localhost:5000/task', {
@@ -35,7 +36,7 @@
       tasks.map(el => el.push(data))
       // tasksRender(data);
     }catch(error){
-      console.log('Error get task:', error)
+      console.log(error, 'ухты ошибка')
     }}render();
     //add with Enter
      function addTaskWithEnter( event){
@@ -45,6 +46,7 @@
         inputTasks.value = ''
       }
     }
+  
   
     //check new task
     function isNotHaveTask(text, tasks) {
@@ -56,6 +58,7 @@
       });
       return isNotHave
     }
+  
   
     // render current task 
     async function render() {
@@ -74,8 +77,8 @@
       let start = inputTasks.value.indexOf(" ")
       let end = inputTasks.value.lastIndexOf(" ")
       let firstPart = inputTasks.value.slice(0,start)
-      let secondPart = inputTasks.value.slice(end)
-      inputTasks.value = firstPart + secondPart
+      let secontPart = inputTasks.value.slice(end)
+      inputTasks.value = firstPart + secontPart
       let newTaskText = inputTasks.value
       
       if (newTaskText && isNotHaveTask(newTaskText, tasks) && inputTasks.value!=" " && (newTaskText.length)<250 ) {
@@ -203,14 +206,13 @@ async function deleteTask(id) {
              body: JSON.stringify({ isComplete: task.isComplete })
            });
          } catch (error) {
-           console.error('Error update status', error);
+           console.error('Ошибка обновления статуса', error);
          }
         })
         namEvent=namEvent+1
         render()
       }
     }
-
     //Function for changing the status of a task when you click on completed
      function changeTaskStatus(event) {
       if (event.target.classList.contains('check')) {
@@ -227,7 +229,7 @@ async function deleteTask(id) {
             body: JSON.stringify({ isComplete: task.isComplete })
           });
         } catch (error) {
-          console.error('Error update status:', error);
+          console.error('Ошибка обновления статуса', error);
         }
           }
           
@@ -251,6 +253,9 @@ async function deleteTask(id) {
       completedTasksCounter.innerHTML = filteredCompletedTasks.length
       uncompletedTasksCounter.innerHTML = allTasksCounter.innerHTML - completedTasksCounter.innerHTML
     }
+  
+
+
 
     function editTask(event) {
       event.target.style.display = "none";
@@ -316,6 +321,8 @@ async function deleteTask(id) {
           console.log('No changes needed or task not found.');
       }
   }
+
+
   
     //Tabulation
     function allTasks() {
@@ -338,9 +345,9 @@ async function deleteTask(id) {
     }
   
     function renderButtonPag(list) {
-      const chButton = Math.ceil((list.length) / 5)
+      const chBotton = Math.ceil((list.length) / 5)
       containerPagination.innerHTML = ''
-      for (i = 1; i < (chButton + 1); i++) {
+      for (i = 1; i < (chBotton + 1); i++) {
         displayButton(i)
       }
     }
@@ -359,17 +366,20 @@ async function deleteTask(id) {
       render(page)
     }
   
+  
     function filtration() {
       let filterTasks = [];
       switch (filterType) {
         case 'active':
           filterTasks = tasks.filter((item) => !item.isComplete);
           if ((filterTasks.length)%5===0){
+            page =page -1
           }
           return filterTasks;
         case 'completed':
           filterTasks = tasks.filter((item) => item.isComplete);
           if ((filterTasks.length)%5===0){
+            page =page -1
           }
           return filterTasks;
         default:
@@ -377,6 +387,7 @@ async function deleteTask(id) {
       }
     }
   
+    
     document.addEventListener('keyup',addTaskWithEnter)
     tasksContainer.addEventListener('click',checkCheckBoxClick)
     addButton.addEventListener('click', addPlus)
